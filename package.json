@@ -1,0 +1,21 @@
+{
+  "name": "react-native-mjverification",
+  "description": "React Native JVerification component for Android and iOS",
+  "homepage": "https://github.com/bashen1/react-native-mjverification",
+  "main": "index.js",
+  "license": "ISC",
+  "author": "bashen1",
+  "version": "2.5.5",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bashen1/react-native-mjverification"
+  },
+  "keywords": [
+    "react-native",
+    "JVerification"
+  ],
+  "peerDependencies": {
+    "jcore-react-native": "^1.9.6",
+    "react-native": ">= 0.60"
+  }
+}
