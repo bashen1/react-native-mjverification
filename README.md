@@ -4,9 +4,9 @@
 
 SDK Version
 
-Android：2.7.7
+Android：2.9.7
 
-iOS：2.7.9
+iOS：2.9.4
 
 此项目基于jverification-react-native@2.5.5修改调整
 
