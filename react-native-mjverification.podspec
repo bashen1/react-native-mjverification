@@ -20,4 +20,5 @@ Pod::Spec.new do |s|
   s.vendored_libraries = "ios/RCTJVerificationModule/*.a"
   s.vendored_frameworks = "ios/RCTJVerificationModule/*.framework"
   s.dependency 'React'
+  s.dependency 'JVerification', '2.9.4'
 end
