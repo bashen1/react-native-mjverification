@@ -4,9 +4,9 @@
 
 SDK Version
 
-Android：2.9.7
+Android：3.0.1
 
-iOS：2.9.4
+iOS：3.0.1
 
 此项目基于jverification-react-native@2.5.5修改调整
 
@@ -71,7 +71,7 @@ pod install
   ```sh
   pod deintegrate
   ```
-  
+
 ### 2.2.2 配置AppKey
 
 * App.js
