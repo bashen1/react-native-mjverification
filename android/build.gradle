@@ -1,3 +1,11 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+}
+
 apply plugin: 'com.android.library'
 
 def safeExtGet(prop, fallback) {
@@ -11,12 +19,23 @@ android {
         minSdkVersion safeExtGet('minSdkVersion', 16)
         targetSdkVersion safeExtGet('targetSdkVersion', 29)
     }
-    sourceSets.main {
-        jniLibs.srcDirs = ['libs']
+    lintOptions {
+        abortOnError false
+    }
+}
+repositories {
+    mavenCentral()
+}
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
     }
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.facebook.react:react-native:+'
+    implementation ('cn.jiguang.sdk:jverification:3.0.1'){
+        exclude group: 'cn.jiguang.sdk', module: 'jcore'//会自动把 jcore 剔除
+    }
 }
