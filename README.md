@@ -60,6 +60,20 @@ npm install react-native-mjcore --save
 
 ### 2.2 iOS
 
+打开`ios/Podfile`文件，添加以下自建百川仓库，可以自己fork
+
+```Podfile
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+·······
+target 'App' do
+  # tag为https://github.com/bashen1/JVerification-Specs.git仓库实际tag
+  pod 'JVerification-Specs', :git=> 'https://github.com/bashen1/JVerification-Specs.git', :tag=> '1.0.0'
+
+  pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
+·······
+target
+```
+
 ### 2.2.1 pod
 
 ```sh
@@ -103,3 +117,5 @@ const initParams = {
 * 集成前务必将example工程跑通
 * JVerification2.2.0属于重构版本，如有紧急需求请前往[极光社区](https://community.jiguang.cn/c/question)
 * 上报问题还麻烦先调用JVerification.setLoggerEnable( true)，拿到debug日志
+* 模块升级时请注意上方iOS的集成方式，如果SDK升级了，需要改tag
+`pod 'JVerification-Specs', :git=> 'https://github.com/bashen1/JVerification-Specs.git', :tag=> '1.0.0'`
