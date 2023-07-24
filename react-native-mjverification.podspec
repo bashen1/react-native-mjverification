@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.summary         = pjson["description"]
   s.license         = pjson["license"]
   s.author          = pjson["author"]
-  
+
   s.ios.deployment_target = '8.0'
 
   s.source          = { :git => "https://github.com/bashen1/react-native-mjverification.git", :tag => "#{s.version}" }
@@ -20,5 +20,5 @@ Pod::Spec.new do |s|
   s.vendored_libraries = "ios/RCTJVerificationModule/*.a"
   s.vendored_frameworks = "ios/RCTJVerificationModule/*.framework"
   s.dependency 'React'
-  s.dependency 'JVerification', '2.9.4'
+  s.dependency 'JVerification', '3.0.1'
 end
