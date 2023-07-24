@@ -616,7 +616,7 @@ RCT_EXPORT_METHOD(setTimeWithConfig: (double)timeInter )
     if ([configParams[UNCHECK_BOX_CALLBACK] isKindOfClass:[NSNumber class]]) {
         BOOL isNeedCallBack = [configParams[UNCHECK_BOX_CALLBACK] boolValue];
         if (isNeedCallBack) {
-            config.customPrivacyAlertViewBlock = ^(UIViewController*vc){
+            config.customPrivacyAlertViewBlock = ^(UIViewController *vc , NSArray *appPrivacys,void(^loginAction)(void)) {
                 [self sendUncheckBoxEvent];
             };
         }
