@@ -287,7 +287,7 @@ RCT_EXPORT_METHOD(getSmsCode: (NSDictionary *)params callback: (RCTResponseSende
     NSString *phoneNumber = @"";
     NSString *signID = @"";
     NSString *templateID = @"";
-    
+
     if(params[@"phoneNumber"]){
         phoneNumber = params[@"phoneNumber"];
     }
@@ -297,7 +297,7 @@ RCT_EXPORT_METHOD(getSmsCode: (NSDictionary *)params callback: (RCTResponseSende
     if(params[@"templateID"]){
         templateID = params[@"templateID"];
     }
-    
+
     [JVERIFICATIONService getSMSCode:(phoneNumber) templateID:templateID signID:signID completionHandler:^(NSDictionary * _Nonnull result) {
         callback(@[result]);
     }];
@@ -511,7 +511,7 @@ RCT_EXPORT_METHOD(setTimeWithConfig: (double)timeInter )
         NSArray *parivacyTwo = configParams[PRIVACY_TWO];
         config.appPrivacyTwo = parivacyTwo;
     }
-    
+
     //2.7.3新增 自定义协议组合
     if([[configParams allKeys] containsObject:PRIVACY_Arr] && configParams[PRIVACY_Arr]){
         NSArray *parivacyArr = configParams[PRIVACY_Arr];
@@ -556,7 +556,7 @@ RCT_EXPORT_METHOD(setTimeWithConfig: (double)timeInter )
             config.appPrivacys = appPrivacyss;
         }
     }
-    
+
     if(configParams[PRIVACY_COLOR]){
         NSNumber *privacyNameColorNum = configParams[PRIVACY_COLOR][0];
         NSNumber *privacyUrlColorNum = configParams[PRIVACY_COLOR][1];
@@ -595,7 +595,7 @@ RCT_EXPORT_METHOD(setTimeWithConfig: (double)timeInter )
         JVLayoutConstraint *constraintH = [JVLayoutConstraint constraintWithAttribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:JVLayoutItemNone attribute:NSLayoutAttributeHeight multiplier:1 constant:privacyH];
         config.privacyConstraints = @[constraintX,constraintY,constraintW,constraintH];
     }
-    
+
     if(configParams[PRIVACY_CONSTRAINTS]){
         NSArray *privacyConstraints= [RCTJVerificationModule configConstraintWithAttributes:configParams[PRIVACY_CONSTRAINTS]];
         config.privacyConstraints = privacyConstraints;
@@ -621,8 +621,8 @@ RCT_EXPORT_METHOD(setTimeWithConfig: (double)timeInter )
             };
         }
     }
-    
-    
+
+
     CGFloat privacyCheckboxW = config.uncheckedImg.size.width;
     CGFloat privacyCheckboxH = config.uncheckedImg.size.height;
     JVLayoutConstraint *constraintX = [JVLayoutConstraint constraintWithAttribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:JVLayoutItemPrivacy attribute:NSLayoutAttributeLeft multiplier:1 constant:-15];
@@ -630,16 +630,16 @@ RCT_EXPORT_METHOD(setTimeWithConfig: (double)timeInter )
     JVLayoutConstraint *constraintW = [JVLayoutConstraint constraintWithAttribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:JVLayoutItemNone attribute:NSLayoutAttributeWidth multiplier:1 constant:privacyCheckboxW];
     JVLayoutConstraint *constraintH = [JVLayoutConstraint constraintWithAttribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:JVLayoutItemNone attribute:NSLayoutAttributeHeight multiplier:1 constant:privacyCheckboxH];
     config.checkViewConstraints = @[constraintX,constraintY,constraintW,constraintH];
-    
+
     if(configParams[CHECK_VIEW_CONSTRAINTS]){
         NSArray *checkViewConstraints= [RCTJVerificationModule configConstraintWithAttributes:configParams[CHECK_VIEW_CONSTRAINTS]];
         config.checkViewConstraints = checkViewConstraints;
     }
-    
+
     if(configParams[IS_ALERT_PRIVACYVC]){
         config.isAlertPrivacyVC = [configParams[IS_ALERT_PRIVACYVC] boolValue];;
     }
-    
+
     //协议
     if(configParams[PRIVACY_WEB_NAV_COLOR]){
         NSNumber *color = configParams[PRIVACY_WEB_NAV_COLOR];
@@ -671,6 +671,11 @@ RCT_EXPORT_METHOD(setTimeWithConfig: (double)timeInter )
     // 弹窗
     if([configParams[SHOW_WINDOW] isKindOfClass:[NSNumber class]]){
         config.showWindow = [configParams[SHOW_WINDOW] boolValue];
+        // 新加--当为弹窗的时候，改为渐变弹出
+        if(config.showWindow == YES){
+            //UIModalTransitionStyleCoverVertical 极光默认（从下往上）/ UIModalTransitionStyleFlipHorizontal 左右翻转 / UIModalTransitionStyleCrossDissolve 渐变效果
+            config.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        }
     }
     if(configParams[WINDOW_BACKGROUND_IMAGE]){
         config.windowBackgroundImage = [self imageNamed:configParams[WINDOW_BACKGROUND_IMAGE]];
@@ -679,7 +684,7 @@ RCT_EXPORT_METHOD(setTimeWithConfig: (double)timeInter )
         CGFloat backgroundAlpha = [configParams[WINDOW_BACKGROUND_ALPHA] floatValue];
         config.windowBackgroundAlpha = backgroundAlpha;
     }
-    
+
     if(configParams[WINDOW_CORNER_RADIUS]){
         CGFloat cornerRadius = [configParams[WINDOW_CORNER_RADIUS] floatValue];
         config.windowCornerRadius = cornerRadius;
