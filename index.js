@@ -9,6 +9,7 @@ const JVerificationModule = NativeModules.JVerificationModule;
 const listeners = {};
 const LoginEvent = 'LoginEvent';  //登录事件
 const UnCheckBox = 'UncheckBoxCallBack';  //iOS 未选中隐私协议CheckBox,点击登录按钮的回调事件
+const CustomUIWithImageEvent = 'CustomUIWithImageEvent';  //自定义组件点击事件
 
 export default class JVerification {
 
@@ -124,7 +125,7 @@ export default class JVerification {
             JVerificationModule.dismissLoginAuthActivity();
         }
         else {
-            JVerificationModule.dismissLoginController();
+            JVerificationModule.dismissLoginController(false);
         }
     }
 
@@ -230,6 +231,25 @@ export default class JVerification {
         }
     }
 
+    /**
+     * 设置一键登录页面样式
+     * @param {*} customConfigParams  同addLoginCustomConfig方法中的customConfigParams
+     * @param {*} customViewParams  自定义图片组件
+     *  var customViewParams = {
+     *      'imageType': String,                    //图片组件类型（用于点击事件监听区分）
+     *      'imageUri': {uri: String},              //图片资源
+     *      'imageConstraints': StringArray,        //[int,int,int,int]图片组件位置(基于屏幕左上角的x,y,w,h)
+     *      'hasClick': boolean,                    //图片组件是否可点击
+     *  }
+     */
+    static addLoginCustomImageConfig(customConfigParams, customViewParams) {
+        if (Platform.OS == 'android') {
+            JVerificationModule.setCustomUIWithImageConfig(customConfigParams, customViewParams);
+        } else {
+            JVerificationModule.customUIWithImageConfig(customConfigParams, customViewParams);
+        }
+    }
+
     /*
      * 登录事件监听
      * @param callback = result => {'code':int,'content':String,'operator':String}
@@ -247,6 +267,17 @@ export default class JVerification {
 		            callback(result);
 		       });
 	}
+
+    /*
+     * 自定义组件点击事件
+     * @param callback = result => {'code':int,'content':String}
+     * */
+    static addCustomUIWithImageEventListener(callback) {
+        listeners[callback] = DeviceEventEmitter.addListener(
+            CustomUIWithImageEvent, result => {
+                callback(result);
+            });
+    }
 
     //移除事件
     static removeListener(callback) {

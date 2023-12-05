@@ -12,10 +12,15 @@
 //事件
 #define LOGIN_EVENT    @"LoginEvent"
 #define UNCHECK_BOX_EVENT  @"UncheckBoxCallBack"
+#define CUSTOM_IMAGE_EVENT    @"CustomUIWithImageEvent"
 //自定义布局路径
 #define CUSTOM_VIEW_NAME      @"customViewName"
 #define CUSTOM_VIEW_POINT     @"customViewPoint"
 #define UNCHECK_BOX_CALLBACK     @"unAgreePrivacyCallBack"
+#define CUSTOM_IMAGE_URI     @"imageUri"
+#define CUSTOM_IMAGE_CONSTRAINTS     @"imageConstraints"
+#define CUSTOM_IMAGE_TYPE     @"imageType"
+#define CUSTOM_IMAGE_CLICK     @"hasClick"
 
 //资源文件夹
 #define JVERIFICATION_RESOURCE          @"JVerificationResource"
@@ -124,6 +129,7 @@
 
 static double defaultTime  = 5000;
 bool debug  = false;
+NSArray *customImageType = nil;
 @implementation RCTJVerificationModule
 
 RCT_EXPORT_MODULE(JVerificationModule);
@@ -248,6 +254,60 @@ RCT_EXPORT_METHOD(customUIWithConfig: (NSDictionary *)configParams viewParams: (
     });
 }
 
+RCT_EXPORT_METHOD(customUIWithImageConfig: (NSDictionary *)configParams viewParams: (NSArray *)viewParams)
+{
+    JVUIConfig *config = [self convertToCinfig:configParams];
+    customImageType = viewParams;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [JVERIFICATIONService customUIWithConfig:config customViews:^(UIView *customAreaView) {
+            for (int i = 0; i < viewParams.count; i++) {
+                
+                NSDictionary *rnImageData = viewParams[i][CUSTOM_IMAGE_URI];
+//                NSString *imageType = viewParams[i][CUSTOM_IMAGE_TYPE];
+                BOOL imageHasClick = [viewParams[i][CUSTOM_IMAGE_CLICK] boolValue];
+                NSArray *point = viewParams[i][CUSTOM_IMAGE_CONSTRAINTS];
+                
+                if (rnImageData != nil) {
+                    NSNumber *pointX = point[0];
+                    NSNumber *pointY = point[1];
+                    NSNumber *pointW = point[2];
+                    NSNumber *pointH = point[3];
+                    CGFloat x = [pointX doubleValue];
+                    CGFloat y = [pointY doubleValue];
+                    CGFloat w = [pointW doubleValue];
+                    CGFloat h = [pointH doubleValue];
+                    if (imageHasClick) {
+                        UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+                        // 图片组件位置frame
+                        [btn setFrame:CGRectMake(x, y, w, h)];
+                        [btn setTag:i];
+                        // 设置某一状态下的背景图片
+                        UIImage *rnImage = [RCTConvert UIImage:rnImageData];
+                        [btn setBackgroundImage:rnImage forState:(UIControlStateNormal)];
+                        [btn setContentMode:(UIViewContentModeScaleToFill)];
+                        
+                        [btn addTarget:self action:@selector(customUIWithImageClick:) forControlEvents:UIControlEventTouchUpInside];
+                        
+                        [customAreaView addSubview:btn];
+                    } else {
+                        UIImageView *iv = [[UIImageView alloc]init];
+                        // 图片组件位置frame
+                        [iv setFrame:CGRectMake(x, y, w, h)];
+                        // 设置某一状态下的背景图片
+                        UIImage *rnImage = [RCTConvert UIImage:rnImageData];
+                        iv.tag = i;
+                        iv.image = rnImage;
+                        iv.contentMode = UIViewContentModeScaleToFill;
+                        
+                        [customAreaView addSubview:iv];
+                    }
+                }
+                
+            }
+        }];
+    });
+}
+
 RCT_EXPORT_METHOD(getAuthorizationWithController: (BOOL *)enable)
 {
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -276,9 +336,11 @@ RCT_EXPORT_METHOD(getAuthorizationWithController: (BOOL *)enable)
     });
 }
 
-RCT_EXPORT_METHOD(dismissLoginController)
+RCT_EXPORT_METHOD(dismissLoginController:flag)
 {
-    [JVERIFICATIONService dismissLoginController];
+    [JVERIFICATIONService dismissLoginControllerAnimated:flag completion:^{
+        // 授权页隐藏完成
+    }];
 }
 
 // 获取验证码
@@ -313,7 +375,7 @@ RCT_EXPORT_METHOD(setTimeWithConfig: (double)timeInter )
 //事件处理
 - (NSArray<NSString *> *)supportedEvents
 {
-    return @[LOGIN_EVENT,UNCHECK_BOX_EVENT];
+    return @[LOGIN_EVENT,UNCHECK_BOX_EVENT,CUSTOM_IMAGE_EVENT];
 }
 
 - (void)sendLoginEvent:(NSDictionary *)responseData
@@ -327,6 +389,13 @@ RCT_EXPORT_METHOD(setTimeWithConfig: (double)timeInter )
     [self.bridge enqueueJSCall:@"RCTDeviceEventEmitter"
                         method:@"emit"
                           args:@[UNCHECK_BOX_EVENT]
+                    completion:NULL];
+}
+- (void)sendCustomImageEvent:(NSDictionary *)responseData
+{
+    [self.bridge enqueueJSCall:@"RCTDeviceEventEmitter"
+                        method:@"emit"
+                          args:@[CUSTOM_IMAGE_EVENT, responseData]
                     completion:NULL];
 }
 //结果返回
@@ -759,5 +828,14 @@ RCT_EXPORT_METHOD(setTimeWithConfig: (double)timeInter )
     return constraints;
 }
 
+- (void)customUIWithImageClick:(UIButton *)button {
+    NSString *content = @"";
+    NSNumber *code = @2000;
+    if (customImageType != nil) {
+        content = customImageType[button.tag][CUSTOM_IMAGE_TYPE];
+    }
+    NSDictionary *responseData = @{CODE:code,CONTENT:content};
+    [self sendCustomImageEvent:responseData];
+}
 @end
 

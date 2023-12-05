@@ -12,7 +12,7 @@
 
 #import <React/RCTRootView.h>
 #import <React/RCTBundleURLProvider.h>
-
+#import <React/RCTConvert.h>
 #import "JVERIFICATIONService.h"
 
 @interface RCTJVerificationModule : RCTEventEmitter<RCTBridgeModule>

@@ -1,11 +1,20 @@
 package cn.jiguang.plugins.verification;
 
 import android.app.Activity;
+import android.content.pm.ApplicationInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.StrictMode;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ImageButton;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
 
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactRootView;
@@ -18,10 +27,13 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -167,6 +179,106 @@ public class JVerificationModule extends ReactContextBaseJavaModule {
             }
         });
     }
+
+    @ReactMethod
+    public void setCustomUIWithImageConfig(final ReadableMap readableMap, final ReadableArray readableArray) {
+        builder = null;
+        System.out.println("readableMap>>>:" + readableMap);
+        convertToConfig(readableMap);
+        reactContext.runOnUiQueueThread(new Runnable() {
+            @Override
+            public void run() {
+                if (readableArray == null) {
+                    JLogger.w(JConstans.PARAMS_NULL);
+                    return;
+                }
+
+                for (int i = 0; i < readableArray.size(); i++) {
+                    if (builder == null) {
+                        builder = new JVerifyUIConfig.Builder();
+                    }
+
+                    try {
+                        ReadableMap uriData = readableArray.getMap(i).getMap("imageUri");
+                        String rnImageUri = uriData.getString("uri");
+                        JLogger.i("------------uri : " + rnImageUri);
+                        String rnImageType = readableArray.getMap(i).getString("imageType");
+                        ReadableArray array = readableArray.getMap(i).hasKey("imageConstraints")
+                                ? readableArray.getMap(i).getArray("imageConstraints")
+                                : null;
+                        Boolean hasClick = readableArray.getMap(i).getBoolean("hasClick");
+
+                        Drawable drawable = null;
+                        if ((reactContext.getApplicationInfo() != null) && ((reactContext.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE ) != 0)) {
+                            // debug开发模式下
+                            JLogger.i("-------------debug开发模式下-------------");
+                            drawable = loadDebugIcon(rnImageUri);
+                        } else {
+                            JLogger.i("-------------release开发模式下-------------");
+                            drawable = ResourceDrawableIdHelper.getInstance()
+                                    .getResourceDrawable(reactContext.getApplicationContext(), rnImageUri);
+                        }
+
+                        // relativeLayout容器
+                        RelativeLayout relativeLayout = new RelativeLayout(reactContext);
+                        // 容器大小
+                        RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        // 设置容器中的元素水平居中
+                        layoutParams1.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                        if (array != null) {
+                            int x = dp2Pix(array.getInt(0));
+                            int y = dp2Pix(array.getInt(1));
+                            int w = dp2Pix(array.getInt(2));
+                            int h = dp2Pix(array.getInt(3));
+                            // 设置容器的位置
+                            layoutParams1.setMargins(x, y, 0, 0);
+                            layoutParams1.width = w;
+                            layoutParams1.height = h;
+                        }
+                        relativeLayout.setLayoutParams(layoutParams1);
+
+                        RelativeLayout.LayoutParams returnLP = new RelativeLayout.LayoutParams(
+                                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        if (array != null) {
+                            int w = dp2Pix(array.getInt(2));
+                            int h = dp2Pix(array.getInt(3));
+                            returnLP.width = w;
+                            returnLP.height = h;
+                        }
+                        if (hasClick) {
+                            // 图片组件
+                            ImageButton imageBtn = new ImageButton(reactContext);
+
+                            // 设置图片
+                            imageBtn.setImageDrawable(drawable);
+                            imageBtn.setScaleType(ImageView.ScaleType.CENTER);
+                            // 设置ImageButton背景透明度
+                            imageBtn.getBackground().setAlpha(0); //view.setBackgroundColor(0);
+                            imageBtn.setLayoutParams(returnLP);
+                            imageBtn.setClickable(true);
+                            imageBtn.setOnClickListener(new View.OnClickListener() {
+                                public void onClick(View vc) {
+                                    sendEvent("CustomUIWithImageEvent",convertToResult(2000, rnImageType));
+                                }
+                            });
+                            relativeLayout.addView(imageBtn);
+                        } else {
+                            ImageView imageView = new ImageView(reactContext);
+                            imageView.setImageDrawable(drawable);
+                            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                            imageView.setLayoutParams(returnLP);
+                            relativeLayout.addView(imageView);
+                        }
+
+                        builder.addCustomView(relativeLayout, false, null);
+                    } catch (Exception e) {
+                        JLogger.e("addCustomView error:"+e.getMessage());
+                    }
+                }
+            }
+        });
+    }
+
     // 获取验证码
     @ReactMethod
     public void getSmsCode(ReadableMap object, final Callback jsCallback) {
@@ -542,4 +654,25 @@ public class JVerificationModule extends ReactContextBaseJavaModule {
         }
     }
 
+    public Drawable loadDebugIcon(String iconDevUri) {
+        Drawable drawable = null;
+        try {
+            StrictMode.ThreadPolicy threadPolicy = StrictMode.getThreadPolicy();
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitNetwork().build());
+
+            drawable = tryLoadIcon(iconDevUri);
+
+            StrictMode.setThreadPolicy(threadPolicy);
+        } catch (Exception e) {
+            JLogger.e("Unable to load icon: " + iconDevUri);
+        }
+        return drawable;
+    }
+
+    @NonNull
+    private Drawable tryLoadIcon(String iconDevUri) throws IOException {
+        URL url = new URL(iconDevUri);
+        Bitmap bitmap = BitmapFactory.decodeStream(url.openStream());
+        return new BitmapDrawable(reactContext.getApplicationContext().getResources(), bitmap);
+    }
 }
