@@ -33,9 +33,11 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import cn.jiguang.plugins.verification.common.JConstans;
 import cn.jiguang.plugins.verification.common.JLogger;
@@ -200,77 +202,78 @@ public class JVerificationModule extends ReactContextBaseJavaModule {
 
                     try {
                         ReadableMap uriData = readableArray.getMap(i).getMap("imageUri");
-                        String rnImageUri = uriData.getString("uri");
-                        JLogger.i("------------uri : " + rnImageUri);
-                        String rnImageType = readableArray.getMap(i).getString("imageType");
-                        ReadableArray array = readableArray.getMap(i).hasKey("imageConstraints")
-                                ? readableArray.getMap(i).getArray("imageConstraints")
-                                : null;
-                        Boolean hasClick = readableArray.getMap(i).getBoolean("hasClick");
-
-                        Drawable drawable = null;
-                        if ((reactContext.getApplicationInfo() != null) && ((reactContext.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE ) != 0)) {
-                            // debug开发模式下
-                            JLogger.i("-------------debug开发模式下-------------");
-                            drawable = loadDebugIcon(rnImageUri);
-                        } else {
-                            JLogger.i("-------------release开发模式下-------------");
-                            drawable = ResourceDrawableIdHelper.getInstance()
-                                    .getResourceDrawable(reactContext.getApplicationContext(), rnImageUri);
+                        String rnImageUri = "";
+                        if (uriData != null) {
+                            rnImageUri = uriData.hasKey("uri") ? uriData.getString("uri") : "";
                         }
+                        if (!Objects.equals(rnImageUri, "")) {
+                            String rnImageType = readableArray.getMap(i).getString("imageType");
+                            ReadableArray array = readableArray.getMap(i).hasKey("imageConstraints")
+                                    ? readableArray.getMap(i).getArray("imageConstraints")
+                                    : null;
+                            boolean hasClick = readableArray.getMap(i).getBoolean("hasClick");
 
-                        // relativeLayout容器
-                        RelativeLayout relativeLayout = new RelativeLayout(reactContext);
-                        // 容器大小
-                        RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        // 设置容器中的元素水平居中
-                        layoutParams1.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                        if (array != null) {
-                            int x = dp2Pix(array.getInt(0));
-                            int y = dp2Pix(array.getInt(1));
-                            int w = dp2Pix(array.getInt(2));
-                            int h = dp2Pix(array.getInt(3));
-                            // 设置容器的位置
-                            layoutParams1.setMargins(x, y, 0, 0);
-                            layoutParams1.width = w;
-                            layoutParams1.height = h;
-                        }
-                        relativeLayout.setLayoutParams(layoutParams1);
-
-                        RelativeLayout.LayoutParams returnLP = new RelativeLayout.LayoutParams(
-                                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        if (array != null) {
-                            int w = dp2Pix(array.getInt(2));
-                            int h = dp2Pix(array.getInt(3));
-                            returnLP.width = w;
-                            returnLP.height = h;
-                        }
-                        if (hasClick) {
-                            // 图片组件
-                            ImageButton imageBtn = new ImageButton(reactContext);
-
-                            // 设置图片
-                            imageBtn.setImageDrawable(drawable);
-                            imageBtn.setScaleType(ImageView.ScaleType.CENTER);
-                            // 设置ImageButton背景透明度
-                            imageBtn.getBackground().setAlpha(0); //view.setBackgroundColor(0);
-                            imageBtn.setLayoutParams(returnLP);
-                            imageBtn.setClickable(true);
-                            imageBtn.setOnClickListener(new View.OnClickListener() {
-                                public void onClick(View vc) {
-                                    sendEvent("CustomUIWithImageEvent",convertToResult(2000, rnImageType));
+                            Drawable drawable = null;
+                            if ((reactContext.getApplicationInfo() != null) && ((reactContext.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE ) != 0)) {
+                                // debug开发模式下
+                                drawable = loadDebugIcon(rnImageUri);
+                            } else {
+                                drawable = ResourceDrawableIdHelper.getInstance()
+                                        .getResourceDrawable(reactContext.getApplicationContext(), rnImageUri);
+                            }
+                            if (drawable != null) {
+                                // relativeLayout容器
+                                RelativeLayout relativeLayout = new RelativeLayout(reactContext);
+                                // 容器大小
+                                RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                // 设置容器中的元素水平居中
+                                layoutParams1.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                                if (array != null) {
+                                    int x = dp2Pix(array.getInt(0));
+                                    int y = dp2Pix(array.getInt(1));
+                                    int w = dp2Pix(array.getInt(2));
+                                    int h = dp2Pix(array.getInt(3));
+                                    // 设置容器的位置
+                                    layoutParams1.setMargins(x, y, 0, 0);
+                                    layoutParams1.width = w;
+                                    layoutParams1.height = h;
                                 }
-                            });
-                            relativeLayout.addView(imageBtn);
-                        } else {
-                            ImageView imageView = new ImageView(reactContext);
-                            imageView.setImageDrawable(drawable);
-                            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                            imageView.setLayoutParams(returnLP);
-                            relativeLayout.addView(imageView);
-                        }
+                                relativeLayout.setLayoutParams(layoutParams1);
 
-                        builder.addCustomView(relativeLayout, false, null);
+                                RelativeLayout.LayoutParams returnLP = new RelativeLayout.LayoutParams(
+                                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                if (array != null) {
+                                    int w = dp2Pix(array.getInt(2));
+                                    int h = dp2Pix(array.getInt(3));
+                                    returnLP.width = w;
+                                    returnLP.height = h;
+                                }
+                                if (hasClick) {
+                                    // 图片组件
+                                    ImageView imageBtn = new ImageView(reactContext);
+
+                                    // 设置图片
+                                    imageBtn.setImageDrawable(drawable);
+                                    imageBtn.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                                    imageBtn.setLayoutParams(returnLP);
+                                    imageBtn.setClickable(true);
+                                    imageBtn.setOnClickListener(new View.OnClickListener() {
+                                        public void onClick(View vc) {
+                                            sendEvent("CustomUIWithImageEvent",convertToResult(2000, rnImageType));
+                                        }
+                                    });
+                                    relativeLayout.addView(imageBtn);
+                                } else {
+                                    ImageView imageView = new ImageView(reactContext);
+                                    imageView.setImageDrawable(drawable);
+                                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                                    imageView.setLayoutParams(returnLP);
+                                    relativeLayout.addView(imageView);
+                                }
+
+                                builder.addCustomView(relativeLayout, false, null);
+                            }
+                        }
                     } catch (Exception e) {
                         JLogger.e("addCustomView error:"+e.getMessage());
                     }
@@ -669,10 +672,22 @@ public class JVerificationModule extends ReactContextBaseJavaModule {
         return drawable;
     }
 
-    @NonNull
     private Drawable tryLoadIcon(String iconDevUri) throws IOException {
-        URL url = new URL(iconDevUri);
-        Bitmap bitmap = BitmapFactory.decodeStream(url.openStream());
-        return new BitmapDrawable(reactContext.getApplicationContext().getResources(), bitmap);
+        Drawable drawable = null;
+        try {
+            URL url = new URL(iconDevUri);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(300);
+            connection.setReadTimeout(300);
+            connection.setRequestMethod("HEAD");
+            int code = connection.getResponseCode();
+            if(code == HttpURLConnection.HTTP_OK) {
+                Bitmap bitmap = BitmapFactory.decodeStream(url.openStream());
+                drawable = new BitmapDrawable(reactContext.getApplicationContext().getResources(), bitmap);
+            }
+        } catch (RuntimeException | IOException e) {
+            JLogger.e("Unable to URL: " + e);
+        }
+        return drawable;
     }
 }
