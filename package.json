@@ -5,7 +5,7 @@
   "main": "index.js",
   "license": "ISC",
   "author": "bashen1",
-  "version": "2.6.6",
+  "version": "2.7.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/bashen1/react-native-mjverification"
