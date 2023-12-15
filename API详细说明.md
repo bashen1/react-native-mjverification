@@ -306,7 +306,7 @@ static dismissLoginPage() {
         JVerificationModule.dismissLoginAuthActivity();
     }
     else {
-        JVerificationModule.dismissLoginController();
+        JVerificationModule.dismissLoginController(false);
     }
 }
 ```
@@ -552,6 +552,80 @@ if(Platform.OS == 'android'){
 
 
 ```
+
+## 自定义认证SDK授权页面UI样式布局 ---图片自定义，仅全屏页面
+
+iOS 页面和 Android页面可以分开设置，详细API文档 参考[授权页面元素配置说明](认证SDK授权页面元素配置API说明.md)
+
+### API - addLoginCustomImageConfig  统一设置授权页面元素配置，需在 login 接口之前调用。
+
+#### 接口定义
+
+```javascript
+static addLoginCustomImageConfig(customConfigParams, customViewParams) {
+    if (Platform.OS == 'android') {
+        JVerificationModule.setCustomUIWithImageConfig(customConfigParams, customViewParams);
+    } else {
+        JVerificationModule.customUIWithImageConfig(customConfigParams, customViewParams);
+    }
+}
+```
+
+#### 参数说明
+
++ customConfigParams 授权页元素设置，详细使用参考[授权页面元素配置说明](认证SDK授权页面元素配置API说明.md)
++ customViewParams 自定义图片
+
+#### 示例
+
+```javascript
+//一键登录页面自定义配置，需要在调用login之前设置，全屏模式
+// customConfigParams参数设置同addLoginCustomConfig方法中的customConfigParams参数
+const customConfigParams = {}
+
+var customViewParams = {
+    imageType: '1',                         //图片类型（用于点击事件监听区分）
+    imageUri: {uri: ''},                    //图片资源 http / https
+    imageConstraints: [0, 30, 134, 60],     //图片位置(基于屏幕左上角的x,y,w,h)
+    hasClick: true,                         //图片是否可点击
+ }
+
+JVerification.addLoginCustomImageConfig(customConfigParams, customViewParams)
+
+```
+
+## 自定义 图片 回调监听
+
+### API -  addCustomUIWithImageEventListener(callback)
+
+#### 接口定义
+配合 addLoginCustomImageConfig 的  customViewParams 属性一起使用,content值为customViewParams属性里的imageType字段值，用于确定是由哪个图片触发点击的
+
+ ```javascript
+ //添加事件监听
+ static addCustomUIWithImageEventListener(callback) {
+     listeners[callback] = DeviceEventEmitter.addListener(
+         CustomUIWithImageEvent, result => {
+             callback(result);
+         });
+ }
+
+ ```
+
+#### 参数说明
+
+- 参数 callback = result => {'code':int,'content':String}
+
+#### 示例
+
+```javascript
+ this.customImageEventListener = result => {
+     console.log('customImageEventListener:' + JSON.stringify(result));
+ };
+ JVerification.addCustomUIWithImageEventListener(this.customImageEventListener);
+  //移除事件
+ JVerificationUtils.removeListener(this.customImageEventListener);
+ ```
 
 #### API - addCustomViewsClickCallback
 
