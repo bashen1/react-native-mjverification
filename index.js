@@ -107,7 +107,7 @@ export default class JVerification {
      * SDK请求授权一键登录
      * @param enable : boolean
      *
-     * boolean:是否自动关闭授权页，true - 是，false - 否；若此字段设置为false，请在收到一键登录回调后调用SDK提供的关闭授权页面方法
+     * enable:是否自动关闭授权页，true - 是，false - 否；若此字段设置为false，请在收到一键登录回调后调用SDK提供的关闭授权页面方法
      * */
     static login(enable) {
         if (Platform.OS == 'android') {
@@ -187,9 +187,9 @@ export default class JVerification {
      *       loginBtnW: int                            //登录按钮宽度
      *       loginBtnH: int                            //登录按钮高度
      *
-     *       privacyOne: StringArray                   //[隐私条款一名称,隐私条款一链接]
-     *       privacyTwo: StringArray                   //[隐私条款二名称,隐私条款二链接]
-     *       privacyNameAndUrlBeanList                 //[{'name':'隐私条款一','url':'https://www.jiguang.cn/about','beforeName':'、'}, {'name':'隐私条款一','url':'https://www.jiguang.cn/about','beforeName':'、'}]
+     *       privacyOne: StringArray                   //[隐私条款一名称,隐私条款一链接] 过期 2.7.3+不生效
+     *       privacyTwo: StringArray                   //[隐私条款二名称,隐私条款二链接] 过期 2.7.3+不生效
+     *       privacyNameAndUrlBeanList                 //since 2.7.3 [{'name':'隐私条款一','url':'https://www.jiguang.cn/about','beforeName':'、'}, {'name':'隐私条款一','url':'https://www.jiguang.cn/about','beforeName':'、'}]
      *       privacyColor: intArray                    //[隐私条款名称颜色,隐私条款链接颜色]
      *       privacyText: StringArray                  //[隐私条款名称外的文字,隐私条款名称外的文字,隐私条款名称外的文字,隐私条款名称外的文字]
      *       privacyTextSize: int                      //隐私条款文字字体大小

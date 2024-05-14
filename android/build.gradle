@@ -35,7 +35,7 @@ allprojects {
 
 dependencies {
     implementation 'com.facebook.react:react-native:+'
-    implementation ('cn.jiguang.sdk:jverification:3.0.1'){
+    implementation ('cn.jiguang.sdk:jverification:3.2.1'){
         exclude group: 'cn.jiguang.sdk', module: 'jcore'//会自动把 jcore 剔除
     }
 }
