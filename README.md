@@ -67,7 +67,7 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 ·······
 target 'App' do
   # tag为https://github.com/bashen1/JVerification-Specs.git仓库实际tag
-  pod 'JVerification-Specs', :git=> 'https://github.com/bashen1/JVerification-Specs.git', :tag=> '1.0.0'
+  pod 'JVerification-Specs', :git=> 'https://github.com/bashen1/JVerification-Specs.git', :tag=> '1.1.0'
 
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
 ·······

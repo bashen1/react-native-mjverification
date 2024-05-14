@@ -1,6 +1,6 @@
-### 认证SDK授权页面元素配置API说明
+# 认证SDK授权页面元素配置API说明
 
-***x 轴未设置偏移则所有组件默认横向居中，所有图片资源android平台在android drowable目录下; iOS在JVerificationResource.bundle文件中,参数为图片的值都为 iOS 图片资源名字***
+***x 轴未设置偏移则所有组件默认横向居中，所有图片资源android平台在android drawable目录下; iOS在JVerificationResource.bundle文件中,参数为图片的值都为 iOS 图片资源名字***
 
 + Android设置授权页背景
 + 图片会默认拉伸铺满整个屏幕，适配不同尺寸手机，建议使用 .9.png 图片来解决适配问题。
@@ -27,7 +27,6 @@
 |:-----:|:----:|:----:|
 |statusBarHidden|boolean|设置状态栏是否隐藏。|
 |statusBarMode|string|设置状态栏暗色模式。值 "light"（正常模式），"dark"（暗色模式）|
-
 
 + Android授权页导航栏
 
@@ -56,7 +55,6 @@
 |navTitleSize|int|设置导航栏标题文字字体大小（单位：sp）|
 |navReturnHidden|boolean|设置导航栏返回按钮是否隐藏。默认不隐藏。|
 |navReturnImage|String|设置导航栏返回按钮图标|
-
 
 + Android授权页logo
 
@@ -192,14 +190,14 @@
 |privacyW|int|设置隐私条款文字栏宽度。|
 |privacyH|int|隐私条款名称外的文字栏高度度|
 |privacyConstraints|(centerX,centerY,width,height)|隐私条款label布局对象，统一设置约束条件，约束条件都是相对于整个屏幕布局,不可与privacyX,privacyY,,privacyW,privacyH同时使用|
-|checkViewConstraints| (centerX,centerY,width,height)|隐私条款checkBox布局对象,相对于整个屏幕布 | 
+|checkViewConstraints| (centerX,centerY,width,height)|隐私条款checkBox布局对象,相对于整个屏幕布 |
 |privacyBookSymbolEnable|boolean|设置隐私条款运营商协议名是否加书名号。|
 |privacyCheckboxHidden|boolean|设置隐私条款checkbox是否隐藏。|
 |privacyCheckedImage|String|设置复选框选中时图片|
 |privacyUncheckedImage|String|设置复选框未选中时图片|
 |privacyCheckEnable|boolean|设置隐私条款默认选中状态，默认不选中。|
-|unAgreePrivacyCallBack| boolean| 值为true时， 当隐私条款checkBox未选中时,点击登录按钮时回调
-当此参数存在时,未选中隐私条款的情况下，登录按钮可以被点击|
+|unAgreePrivacyCallBack| boolean| 值为true时， 当隐私条款checkBox未选中时,点击登录按钮时回调|
+|当此参数存在时,未选中隐私条款的情况下，登录按钮可以被点击|||
 
 + Android授权页隐私协议web页面
 

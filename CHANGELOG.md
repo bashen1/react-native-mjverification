@@ -1,4 +1,6 @@
-# 更新日志
+# CHANGELOG
+
+## 更新日志
 
 ### v2.5.4
 
@@ -27,7 +29,7 @@
 
 ### v2.4.5
 
-- android和iOS sdk更新到2.6.7 ，支持cheockBox未选中回调。补充相关认证授权页API说明文档。
+- android和iOS sdk更新到2.6.7 ，支持checkBox未选中回调。补充相关认证授权页API说明文档。
 
 ### v2.4.4
 
