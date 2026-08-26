@@ -2,6 +2,56 @@
 
 ## 更新日志
 
+### v2.7.2
+
+- Android移除无效的init方法
+
+### v2.7.1
+
+- 升级 Android SDK 至 3.2.1
+- 更新说明文档
+
+### v2.7.0
+
+- 增加addLoginCustomImageConfig与addCustomUIWithImageEventListener方法
+- Android加强判断
+- 添加addLoginCustomImageConfig 与 addCustomUIWithImageEventListener API 说明
+
+### v2.6.6
+
+- 调整iOS一键登录弹窗动画为渐变
+
+### v2.6.5
+
+- iOS支持RN 0.71
+- 升级Android SDK至3.0.1
+
+### v2.6.4
+
+- 撤回Android SDK至2.9.4
+
+### v2.6.3
+
+- 修复iOS无法编译的问题
+
+### v2.6.2
+
+- 更换iOS集成方式
+
+### v2.6.1
+
+- 升级iOS SDK至3.0.1
+- 升级Android SDK至3.0.1
+
+### v2.6.0
+
+- iOS升级SDK至2.9.4，采用pod方式集成SDK
+- Android升级SDK至2.9.7，修复Android 8可能存在的闪退问题
+
+### v2.5.5
+
+- 初始化
+
 ### v2.5.4
 
 - iOS 更新原生SDK到2.7.9
