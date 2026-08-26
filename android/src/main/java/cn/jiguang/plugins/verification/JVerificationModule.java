@@ -71,11 +71,6 @@ public class JVerificationModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void init(){
-        JVerificationInterface.init(reactContext);
-    }
-
-    @ReactMethod
     public void init(ReadableMap readableMap, final Callback callback){
         int time = 10000;
         if(readableMap!=null){
